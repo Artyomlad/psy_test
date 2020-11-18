@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  test:
+  psy_test:
     image: "artyomlad/psy_test:1"
     ports:
       - "8080:80"
