@@ -149,3 +149,20 @@ curl $git_yaml_url -o /tmp/app.yaml
 
 # Start docker-compose app
 docker-compose -f /tmp/app.yaml up -d
+
+echo "Checking Website.."
+
+# Waiting for docker container to start
+sleep 10
+
+if ! curl -s localhost:$nginx_port > /dev/null
+then
+    echo "Unable to access website on port $nginx_port"
+    exit 1
+elif [ -z "$(curl -s localhost:$nginx_port | grep "Hello World")" ]
+then
+    echo "Managed to access Website on port $nginx_port but got unexpected response"
+    exit 1
+fi
+
+echo "Server Up and running"
