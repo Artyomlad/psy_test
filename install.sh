@@ -82,7 +82,9 @@ then
 
     yum install -y yum-utils
     yum-config-manager --add-repo $docker_repo_url
-    yum install -y docker-ce docker-ce-cli containerd.io
+    yum install -y docker-ce 
+    yum install -y docker-ce-cli 
+    yum install -y containerd.io
     systemctl enable docker
     systemctl start docker
 else
