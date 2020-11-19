@@ -6,13 +6,16 @@ git_yaml_url="https://raw.githubusercontent.com/Artyomlad/psy_test/main/app.yaml
 app_vol_mount="/mnt/logs"
 sshd_port="2222"
 nginx_port="8080"
+yaml_location="/tmp/app.yaml"
 
+# docker version 19.03.0+ required
 # first part of docker version
 docker1=19
 
 # second part of docker version
 docker2=3
 
+# docker compose version 1.27.0+ required
 # first part of docker compose version
 docker_compose1=1
 
@@ -49,14 +52,14 @@ echo "Verifying Ports"
 # verify port sshd (2222)
 if [ -n "$(netstat -tulpn | grep ":$sshd_port ")" ]
 then
-    echo "port $sshd_port is not available and required for the application. Please release this port and run the script again"
+    echo "port $sshd_port is not available and required for this application. Please release this port and run the script again"
     exit 1
 fi
 
 # verify port nginx (8080)
 if [ -n "$(netstat -tulpn | grep ":$nginx_port ")" ]
 then
-    echo "port $nginx_port is not available and required for the application. Please release this port and run the script again"
+    echo "port $nginx_port is not available and required for this application. Please release this port and run the script again"
     exit 1
 fi
 
@@ -65,7 +68,7 @@ echo "Ok"
 # Verify dir app_vol_mount (/mnt/logs) exists
 if [ ! -d $app_vol_mount ] 
 then
-    echo "Directory $app_vol_mount is required and doesn't exist"
+    echo "Directory $app_vol_mount is required but doesn't exist"
 
     read -p "Do you want to create it? [Y/N]" create_dir
     case $create_dir in
@@ -110,7 +113,11 @@ else
     fi
 
     # Verify docker is running
-    systemctl start docker
+    if systemctl start docker 2> /dev/null
+    then
+        echo "Unable to start docker. Verify docker installed correctly and start it manually"
+        exit 1
+    fi
 fi
 
 # Verify Docker compose 
@@ -147,10 +154,10 @@ else
 fi
 
 # Get docker-compose yaml
-curl $git_yaml_url -o /tmp/app.yaml
+curl $git_yaml_url -o $yaml_location
 
 # Start docker-compose app
-docker-compose -f /tmp/app.yaml up -d
+docker-compose -f $yaml_location up -d
 
 echo "Checking Website.."
 
