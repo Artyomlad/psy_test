@@ -113,7 +113,8 @@ else
     fi
 
     # Verify docker is running
-    if systemctl start docker 2> /dev/null
+    systemctl start docker &> /dev/null
+    if [ ! $? -eq 0 ]
     then
         echo "Unable to start docker. Verify docker installed correctly and start it manually"
         exit 1
